@@ -79,7 +79,7 @@ By the end of this lecture you will be able to:
 - use Python as a **calculator** (`+ - * / ** %`) and show results with `print()`;
 - write **comments** to leave notes for your future self;
 - find **help** on anything with `help()` and `?`;
-- run a real cheminformatics demo (drawing a molecule from its formula) — a taste of what is coming.
+- run a real cheminformatics demo (drawing a molecule from its **structure**, written as a SMILES string) — a taste of what is coming.
 """))
 
     C.append(md(r"""
@@ -190,7 +190,7 @@ Carbon dioxide, CO₂, has one carbon atom (atomic mass ≈ 12.011) and two oxyg
     C.append(md(r"""
 ## A feel for division
 
-Python has two kinds of division, and the difference trips everyone up at first. There is no theory to learn here — just run the cell and *notice* what happens.
+Python has two kinds of division (`/` and `//`), plus a separate **remainder** operator `%`. The difference trips everyone up at first. There is no theory to learn here — just run the cell and *notice* what happens.
 """))
 
     C.append(code(r"""
@@ -461,6 +461,19 @@ An **f-string** lets you drop a value straight into a string. Put an `f` before 
     C.append(code(r"""
 molar_mass = 46.07     # ethanol, g/mol
 print(f"The molar mass of {name} is {molar_mass:.2f} g/mol")
+"""))
+
+    C.append(md(r"""
+You can also control the **width** and **alignment** of a value. A number written *before* the dot sets a minimum width, and `<` or `>` aligns the value to the **left** or **right** inside that width. This is how you line numbers up into tidy columns — you will see this style in later lectures:
+"""))
+
+    C.append(code(r"""
+# {:<10} = at least 10 characters wide, left-aligned;
+# {:>8.2f} = right-aligned in a width of 8, shown to 2 decimal places.
+print(f"{'molecule':<10}{'mass / g/mol':>14}")
+print(f"{'water':<10}{18.02:>14.2f}")
+print(f"{'ethanol':<10}{46.07:>14.2f}")
+print(f"{'caffeine':<10}{194.19:>14.2f}")
 """))
 
     C.append(md(r"""
@@ -826,17 +839,18 @@ print(f"{amount:.3f} mol")
     C.append(md(r"""
 ## Default arguments
 
-You can give a parameter a **default value**, used when the caller does not supply one. Suppose we usually weigh things in grams but occasionally in milligrams:
+You can give a parameter a **default value**, used when the caller does not supply one. A natural example uses the **Beer–Lambert law** (which we will meet properly in Lecture 06): the absorbance of a solution is `A = ε · c · l`, where the path length `l` is almost always a standard **1 cm** cuvette — so we let it default to `1.0`.
 """))
 
     C.append(code(r"""
-def moles(mass, molar_mass_g_per_mol, mass_in_mg=False):
-    if mass_in_mg:
-        mass = mass / 1000        # convert mg to g first
-    return mass / molar_mass_g_per_mol
+def absorbance(concentration, epsilon, path_length=1.0):
+    "Beer-Lambert absorbance; path_length defaults to a standard 1 cm cuvette."
+    return epsilon * concentration * path_length
 
-print(moles(9.0, 18.015))                 # grams (the default)
-print(moles(9000, 18.015, mass_in_mg=True))   # milligrams — same physical amount
+# Called without path_length: the 1.0 cm default is used automatically.
+print("1 cm cuvette: ", absorbance(1e-4, 12000))
+# Called with an explicit 2 cm path length instead:
+print("2 cm cuvette: ", absorbance(1e-4, 12000, path_length=2.0))
 """))
 
     C.append(md(r"""
@@ -957,6 +971,28 @@ print(f"0.25 mol of ethanol weighs {mass:.2f} g")
 '''))
 
     C.append(md(r"""
+### 🔬 Try it yourself
+
+Write a function `percent_by_mass(element_mass, molar_mass)` that returns the percentage of a molecule's mass contributed by one element — that is, `element_mass / molar_mass * 100`. Give it a docstring, then use it to find what percentage of **water's** mass comes from its single oxygen atom (oxygen mass `15.999`, water molar mass `18.015`).
+"""))
+
+    C.append(code(r"""
+# Your code here.
+"""))
+
+    C.append(md(r"""
+**Solution**
+"""))
+
+    C.append(code(r'''
+def percent_by_mass(element_mass, molar_mass_g_per_mol):
+    """Return the percentage of a molecule's mass due to a given element."""
+    return element_mass / molar_mass_g_per_mol * 100
+
+print(f"Oxygen makes up {percent_by_mass(15.999, 18.015):.1f}% of water's mass")
+'''))
+
+    C.append(md(r"""
 ## Key takeaways
 
 - A **function** packages a calculation: `def name(parameters):` ... `return result`.
@@ -1009,6 +1045,10 @@ By the end of this lecture you will be able to:
 """))
 
     C.append(md(r"""
+> **📌 A note on pace.** This is the densest lecture in the course — it gathers together all of Python's decision-making and looping tools. Sections marked **"Optional / stretch"** (`while` loops, `break`/`continue`, and list comprehensions) can be skipped on a first pass and moved to self-study if time is short; the core ideas are booleans, `if`/`elif`/`else`, and the `for` loop.
+"""))
+
+    C.append(md(r"""
 ## Booleans and comparisons
 
 A **boolean** is a value that is either `True` or `False`. You get one whenever you **compare** two things:
@@ -1022,10 +1062,10 @@ A **boolean** is a value that is either `True` or `False`. You get one whenever 
 """))
 
     C.append(code(r"""
-molar_mass = 180.16     # aspirin, g/mol
-print(molar_mass < 500)      # is it below 500?
-print(molar_mass == 180.16)
-print(molar_mass != 500)
+aspirin_mass = 180.16     # g/mol
+print(aspirin_mass < 500)      # is it below 500?
+print(aspirin_mass == 180.16)
+print(aspirin_mass != 500)
 """))
 
     C.append(md(r"""
@@ -1033,10 +1073,10 @@ Combine conditions with **`and`** (both must be true), **`or`** (at least one), 
 """))
 
     C.append(code(r"""
-logp = 1.31     # aspirin's (computed) logP
-print(molar_mass < 500 and logp < 5)     # both conditions true?
-print(molar_mass > 500 or logp < 5)      # at least one true?
-print(not (molar_mass > 500))            # flip a condition
+aspirin_logp = 1.31     # aspirin's (computed) logP
+print(aspirin_mass < 500 and aspirin_logp < 5)     # both conditions true?
+print(aspirin_mass > 500 or aspirin_logp < 5)      # at least one true?
+print(not (aspirin_mass > 500))                    # flip a condition
 """))
 
     C.append(md(r"""
@@ -1054,6 +1094,32 @@ elif mass < 500:
     print("medium-sized molecule")
 else:
     print("large molecule")
+"""))
+
+    C.append(md(r"""
+### 🔬 Try it yourself
+
+Turn that size classifier into a reusable **function** `size_label(mass)` that *returns* the string `"small"`, `"medium"` or `"large"` (same cut-offs as above), instead of printing. Test it on caffeine (`194.19` g/mol). This combines `if`/`elif`/`else` with the functions from Lecture 03.
+"""))
+
+    C.append(code(r"""
+# Your code here.
+"""))
+
+    C.append(md(r"""
+**Solution**
+"""))
+
+    C.append(code(r"""
+def size_label(mass):
+    if mass < 100:
+        return "small"
+    elif mass < 500:
+        return "medium"
+    else:
+        return "large"
+
+print("Caffeine is", size_label(194.19))
 """))
 
     C.append(md(r"""
@@ -1180,7 +1246,9 @@ print(f"Below {cutoff} g/mol:", light_molecules)
 """))
 
     C.append(md(r"""
-## `while` loops (and the infinite-loop trap)
+## Optional / stretch: `while` loops (and the infinite-loop trap)
+
+*(You can skip this section on a first pass and return to it later.)*
 
 A **`while`** loop keeps going *as long as* a condition stays `True`. Use it when you do not know in advance how many repeats you need. Here we simulate a simple radioactive-style halving until very little remains.
 """))
@@ -1199,7 +1267,9 @@ print(f"After {half_lives} halvings, {amount:.3f} units remain")
 """))
 
     C.append(md(r"""
-## `break` and `continue`
+## Optional / stretch: `break` and `continue`
+
+*(Also optional on a first pass.)*
 
 Inside any loop: **`break`** stops the loop completely; **`continue`** skips to the next item.
 """))
@@ -1245,7 +1315,13 @@ def rule_of_five(smiles):
     if acceptors > 10:
         violations += 1
     return violations, violations <= 1
+"""))
 
+    C.append(md(r"""
+Now call it on aspirin (the function returns two things, which we unpack into two names):
+"""))
+
+    C.append(code(r"""
 v, drug_like = rule_of_five("CC(=O)Oc1ccccc1C(=O)O")   # aspirin
 print(f"Aspirin: {v} violation(s); drug-like? {drug_like}")
 """))
@@ -1256,22 +1332,55 @@ Now loop over several molecules (as SMILES) and print each one's verdict — dec
 
     C.append(code(r"""
 smiles_set = {
-    "water":      "O",
-    "ethanol":    "CCO",
-    "caffeine":   "Cn1cnc2c1c(=O)n(C)c(=O)n2C",
-    "aspirin":    "CC(=O)Oc1ccccc1C(=O)O",
-    "glucose":    "OCC1OC(O)C(O)C(O)C1O",
-    "ibuprofen":  "CC(C)Cc1ccc(cc1)C(C)C(=O)O",
+    "water":        "O",
+    "ethanol":      "CCO",
+    "caffeine":     "Cn1cnc2c1c(=O)n(C)c(=O)n2C",
+    "aspirin":      "CC(=O)Oc1ccccc1C(=O)O",
+    "glucose":      "OCC1OC(O)C(O)C(O)C1O",
+    "ibuprofen":    "CC(C)Cc1ccc(cc1)C(C)C(=O)O",
+    "sucrose":      "OC1C(O)C(O)C(OC1CO)OC1(CO)OC(CO)C(O)C1O",
+    "atorvastatin": "CC(C)c1c(C(=O)Nc2ccccc2)c(-c2ccccc2)c(-c2ccc(F)cc2)n1CCC(O)CC(O)CC(=O)O",
 }
 
 for name, smiles in smiles_set.items():
     violations, drug_like = rule_of_five(smiles)
     verdict = "PASS" if drug_like else "FAIL"
-    print(f"{name:<10} {violations} violation(s)  ->  {verdict}")
+    print(f"{name:<13} {violations} violation(s)  ->  {verdict}")
 """))
 
     C.append(md(r"""
-## A gentle first look at list comprehensions
+Now the screen actually *screens*: **sucrose** (table sugar) and **atorvastatin** (the drug Lipitor) both come out as `FAIL`, for different reasons — sucrose has far too many hydrogen-bond donors and acceptors, while atorvastatin is both too heavy and too fat-loving.
+
+> **🧪 Chemistry aside — why does water show 0 hydrogen-bond donors and acceptors?** If you look closely at the descriptor counts (in the data file, or by calling `Lipinski.NumHDonors` yourself), you will see that **water** and **methane** come out with **0** hydrogen-bond donors and **0** acceptors — which looks plain wrong, since water is the textbook hydrogen bonder. The reason is that RDKit's Lipinski counts follow *precise structural definitions* (a counted donor atom must carry exactly one hydrogen, and so on) that do not always match a chemist's intuition for very small molecules. It is a useful reminder: **a computed descriptor is only as meaningful as its definition — always check what a number actually counts.**
+"""))
+
+    C.append(md(r"""
+### 🔬 Try it yourself
+
+Now that the set contains molecules that genuinely fail, **count how many molecules in `smiles_set` fail the rule of five** (i.e. are *not* drug-like). Use a `for` loop and a counter.
+"""))
+
+    C.append(code(r"""
+# Your code here.
+"""))
+
+    C.append(md(r"""
+**Solution**
+"""))
+
+    C.append(code(r"""
+n_fail = 0
+for name, smiles in smiles_set.items():
+    violations, drug_like = rule_of_five(smiles)
+    if not drug_like:
+        n_fail += 1
+print(f"{n_fail} of {len(smiles_set)} molecules fail the rule of five")
+"""))
+
+    C.append(md(r"""
+## Optional / stretch: a gentle first look at list comprehensions
+
+*(A convenience you can defer to self-study — an ordinary `for` loop always works just as well.)*
 
 Once you are comfortable writing a `for` loop that builds a list, Python offers a shorthand for that exact pattern: a **list comprehension**. Compare the two — they do the same thing.
 """))
@@ -1470,6 +1579,25 @@ for row in rows:
 """))
 
     C.append(md(r"""
+### 🔬 Try it yourself
+
+Each `row` is a dictionary with keys like `"name"` and `"formula"`. Loop over `rows` and print every molecule's **name and formula** side by side.
+"""))
+
+    C.append(code(r"""
+# Your code here.
+"""))
+
+    C.append(md(r"""
+**Solution**
+"""))
+
+    C.append(code(r"""
+for row in rows:
+    print(f"{row['name']:<13} {row['formula']}")
+"""))
+
+    C.append(md(r"""
 ## Applying the rule-of-five filter and writing a new file
 
 Now the real task. We will reuse the rule-of-five idea from Lecture 04 — but this time the descriptors are already in the file, so we just read them. We collect the drug-like molecules and **write them to a new CSV**.
@@ -1509,6 +1637,31 @@ Open the `"w"` argument up for a moment: it means **write** mode (it creates the
 """))
 
     C.append(md(r"""
+### 🔬 Try it yourself
+
+The opposite of the subset above: build a list of the molecules that **fail** the rule of five (`not passes_rule_of_five(row)`) and write them to `../data/non_drug_like.csv` the same way. Print how many you wrote.
+"""))
+
+    C.append(code(r"""
+# Your code here.
+"""))
+
+    C.append(md(r"""
+**Solution**
+"""))
+
+    C.append(code(r"""
+failing = [row for row in rows if not passes_rule_of_five(row)]
+
+with open("../data/non_drug_like.csv", "w", newline="") as f:
+    writer = csv.DictWriter(f, fieldnames=rows[0].keys())
+    writer.writeheader()
+    writer.writerows(failing)
+
+print(f"Wrote {len(failing)} non-drug-like molecules to ../data/non_drug_like.csv")
+"""))
+
+    C.append(md(r"""
 ## The easier way: pandas
 
 Reading CSVs is so common that the **pandas** library makes it a one-liner. Think of a pandas **DataFrame** as *a smart table* — like a spreadsheet you can compute with. We will not turn this into a pandas course; just meet it as a convenient tool for tabular data.
@@ -1522,17 +1675,19 @@ df          # a DataFrame displays as a tidy table
 """))
 
     C.append(md(r"""
-pandas already knows the numeric columns are numbers, so you can compute directly — no `float(...)` needed:
+pandas already knows the numeric columns are numbers, so you can compute directly — no `float(...)` needed. We can even reproduce **the exact same rule of five from Lecture 04** (drug-like = *at most one* violation) using whole-column comparisons. Each comparison gives a column of `True`/`False`; `.astype(int)` turns those into 1s and 0s, so adding the four columns counts the violations per molecule:
 """))
 
     C.append(code(r"""
 print("Mean molar mass:", round(df["molar_mass"].mean(), 2), "g/mol")
 print("Heaviest molecule:", df.loc[df["molar_mass"].idxmax(), "name"])
 
-# The same drug-like filter, the pandas way:
-mask = (df["molar_mass"] <= 500) & (df["logp"] <= 5) & \
-       (df["h_bond_donors"] <= 5) & (df["h_bond_acceptors"] <= 10)
-print(df[mask]["name"].tolist())
+# The same rule as Lecture 04: count violations, drug-like if at most one.
+violations = ((df["molar_mass"] > 500).astype(int) + (df["logp"] > 5).astype(int)
+              + (df["h_bond_donors"] > 5).astype(int)
+              + (df["h_bond_acceptors"] > 10).astype(int))
+drug_like_mask = violations <= 1
+print(df[drug_like_mask]["name"].tolist())
 """))
 
     C.append(md(r"""
@@ -1667,6 +1822,37 @@ print("array * 2:", concs * 2)            # every value doubled
 
     C.append(md(r"""
 That element-wise behaviour is the whole point. No loop, no fuss — and for big datasets it is dramatically faster.
+"""))
+
+    C.append(md(r"""
+**How much faster? Let us measure it.** We add up a million numbers two ways — with a plain Python loop, and with NumPy — and time each with `time.perf_counter`:
+"""))
+
+    C.append(code(r"""
+import time
+
+n = 1_000_000
+values = np.arange(n)           # a big array: 0, 1, 2, ... up to 999999
+
+# The slow way: a plain Python loop.
+start = time.perf_counter()
+total_loop = 0
+for v in values:
+    total_loop += v
+loop_time = time.perf_counter() - start
+
+# The fast way: NumPy sums the whole array in one optimised call.
+start = time.perf_counter()
+total_numpy = values.sum()
+numpy_time = time.perf_counter() - start
+
+print(f"Python loop: {loop_time * 1000:7.1f} ms")
+print(f"NumPy sum:   {numpy_time * 1000:7.1f} ms")
+print(f"Same answer ({total_loop == total_numpy}); NumPy was ~{loop_time / numpy_time:.0f}x faster")
+"""))
+
+    C.append(md(r"""
+The exact figures depend on your computer, but NumPy is typically hundreds to thousands of times faster — it does the work in optimised low-level code instead of stepping through a Python loop. That speed is why NumPy underpins almost all scientific Python.
 """))
 
     C.append(md(r"""
@@ -2047,22 +2233,30 @@ plt.show()
     C.append(md(r"""
 ## A scatter coloured by a category: molar mass vs logP
 
-We can colour points by a property. Here we colour molecules by whether they are drug-like (rule of five), tying together the chemistry from the whole course. We compute a simple drug-like flag from the table's columns.
+We can split points by a property. Here we group molecules by whether they are drug-like — the **rule of five from Lecture 04** (at most one violation) — tying the chemistry from the whole course together.
+
+> **A good-figure habit.** We deliberately avoid the classic **red/green** pairing, which is the hardest combination for colour-blind readers to tell apart. Instead we use a colour-blind-friendly blue/orange pair **and** different marker *shapes* (circles vs crosses), so the two groups are distinguishable even in greyscale or for colour-blind readers.
 """))
 
     C.append(code(r"""
 mw = molecules["molar_mass"].to_numpy()
 logp = molecules["logp"].to_numpy()
+donors = molecules["h_bond_donors"].to_numpy()
+acceptors = molecules["h_bond_acceptors"].to_numpy()
 
-drug_like = ((molecules["molar_mass"] <= 500) & (molecules["logp"] <= 5) &
-             (molecules["h_bond_donors"] <= 5) & (molecules["h_bond_acceptors"] <= 10)).to_numpy()
+# Same rule of five as Lecture 04: count violations, drug-like if at most one.
+violations = ((mw > 500).astype(int) + (logp > 5).astype(int)
+              + (donors > 5).astype(int) + (acceptors > 10).astype(int))
+drug_like = violations <= 1
 
 plt.figure(figsize=(6, 4))
-plt.scatter(mw[drug_like], logp[drug_like], color="green", label="drug-like")
-plt.scatter(mw[~drug_like], logp[~drug_like], color="red", label="not drug-like")
+plt.scatter(mw[drug_like], logp[drug_like],
+            color="tab:blue", marker="o", s=60, label="drug-like")
+plt.scatter(mw[~drug_like], logp[~drug_like],
+            color="tab:orange", marker="X", s=90, label="not drug-like")
 plt.xlabel("Molar mass / g mol$^{-1}$")
 plt.ylabel("logP (computed)")
-plt.title("Molecular properties, coloured by drug-likeness")
+plt.title("Molecular properties by drug-likeness (Lipinski)")
 plt.legend()
 plt.show()
 """))
@@ -2090,6 +2284,58 @@ plt.ylabel("Molar mass / g mol$^{-1}$")
 plt.title("Molar mass of each molecule")
 plt.xticks(rotation=45, ha="right")     # rotate labels so they do not overlap
 plt.tight_layout()
+plt.show()
+"""))
+
+    C.append(md(r"""
+### 🔬 Try it yourself
+
+Make a **bar chart of logP** for each molecule (use `molecules["logp"]`). Label the axes (logP has no units), add a title, and rotate the x-tick labels as above so the names stay readable.
+"""))
+
+    C.append(code(r"""
+# Your code here.
+"""))
+
+    C.append(md(r"""
+**Solution**
+"""))
+
+    C.append(code(r"""
+plt.figure(figsize=(8, 4))
+plt.bar(molecules["name"], molecules["logp"], color="darkorange")
+plt.xlabel("Molecule")
+plt.ylabel("logP (computed)")
+plt.title("Computed logP of each molecule")
+plt.xticks(rotation=45, ha="right")
+plt.tight_layout()
+plt.show()
+"""))
+
+    C.append(md(r"""
+### 🔬 Try it yourself
+
+The plot below runs, but it is **missing its labels** — a cardinal sin for a scientific figure. In the solution cell, take the same plot and add an **x-label** (`"Wavelength / nm"`), a **y-label** (`"Absorbance"`), a **title**, and a **legend**.
+"""))
+
+    C.append(code(r"""
+# A deliberately unlabelled plot — fix it in the solution below.
+plt.figure(figsize=(7, 4))
+plt.plot(wavelength, absorbance)
+plt.show()
+"""))
+
+    C.append(md(r"""
+**Solution**
+"""))
+
+    C.append(code(r"""
+plt.figure(figsize=(7, 4))
+plt.plot(wavelength, absorbance, label="UV-Vis spectrum")
+plt.xlabel("Wavelength / nm")
+plt.ylabel("Absorbance")
+plt.title("UV-Vis absorption spectrum")
+plt.legend()
 plt.show()
 """))
 

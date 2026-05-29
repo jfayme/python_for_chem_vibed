@@ -30,17 +30,18 @@ from rdkit.Chem import Descriptors, Lipinski
 from rdkit.Chem import rdMolDescriptors
 
 
-# ---------------------------------------------------------------------------
-# Where to write the data. The script lives in build/, so the repo root is its
-# parent's parent... actually its parent is build/, so root is parent.parent? No:
-# build/make_data.py -> parent is build/, root is parent.parent.
-# We compute it robustly below.
-# ---------------------------------------------------------------------------
+# This script lives in build/, so the repository root is one level up.
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = REPO_ROOT / "data"
 
 
-# The core teaching set (brief §8) plus methane and acetic acid.
+# The core teaching set (brief §8) plus methane and acetic acid, and three
+# larger molecules that genuinely FAIL or sit on the edge of Lipinski's rule of
+# five — so the drug-likeness screen actually screens something out:
+#   * cholesterol  — passes, but with exactly ONE violation (high logP): a nice
+#                    borderline case showing the rule tolerates one violation;
+#   * sucrose      — fails: far too many H-bond donors/acceptors (table sugar);
+#   * atorvastatin — fails: too heavy and too fat-loving (the drug Lipitor).
 # Only name + SMILES are hand-written; everything else comes from RDKit.
 MOLECULES = [
     ("water", "O"),
@@ -53,6 +54,10 @@ MOLECULES = [
     ("aspirin", "CC(=O)Oc1ccccc1C(=O)O"),
     ("caffeine", "Cn1cnc2c1c(=O)n(C)c(=O)n2C"),
     ("ibuprofen", "CC(C)Cc1ccc(cc1)C(C)C(=O)O"),
+    ("cholesterol", "CC(C)CCCC(C)C1CCC2C1(CCC3C2CC=C4C3(CCC(C4)O)C)C"),
+    ("sucrose", "OC1C(O)C(O)C(OC1CO)OC1(CO)OC(CO)C(O)C1O"),
+    ("atorvastatin",
+     "CC(C)c1c(C(=O)Nc2ccccc2)c(-c2ccccc2)c(-c2ccc(F)cc2)n1CCC(O)CC(O)CC(=O)O"),
 ]
 
 FIELDNAMES = [

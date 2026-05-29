@@ -55,8 +55,9 @@ for RDKit. See [SETUP.md](SETUP.md).
 | 07 | `07-plotting.ipynb` | matplotlib: line/scatter/bar/histogram, labels, saving | spectrum, calibration curve, property plots, a molecule grid |
 
 A small set of molecules (water, ethanol, caffeine, aspirin, glucose, benzene,
-ibuprofen, paracetamol, and a couple more) recurs throughout so concepts build
-on familiar data.
+ibuprofen, paracetamol, and several more — including sucrose and atorvastatin,
+which deliberately *fail* the drug-likeness screen) recurs throughout so
+concepts build on familiar data.
 
 ---
 
@@ -99,6 +100,13 @@ Every numeric value in `data/molecules.csv` (molar mass, logP, hydrogen-bond
 donors/acceptors) is computed by RDKit, so the figures are self-consistent.
 Note that the `logp` column is RDKit's **computed** (Crippen) logP, which is
 close to — but not identical to — experimentally measured logP.
+
+You may also notice **water** is listed with 0 hydrogen-bond donors and 0
+acceptors — which looks wrong, since water is the textbook hydrogen bonder. This
+is because RDKit's Lipinski counts follow precise structural definitions that do
+not always match chemical intuition for very small molecules. It is a useful
+reminder (made in Lecture 04 too): a computed descriptor is only as meaningful
+as its definition — always check what a number actually counts.
 
 ---
 

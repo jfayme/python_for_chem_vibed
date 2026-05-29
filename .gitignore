@@ -26,6 +26,7 @@ Thumbs.db
 # Build / output artefacts that students regenerate themselves by running the
 # notebooks (the data/ source files committed to the repo are NOT ignored).
 data/drug_like_subset.csv
+data/non_drug_like.csv
 data/summary.txt
 
 # Figures saved by the plotting lecture's savefig examples/exercises.

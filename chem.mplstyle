@@ -1,0 +1,31 @@
+# chem.mplstyle — Python for Chemists house style
+# Colour-blind safe (Okabe–Ito). Load with: plt.style.use("chem.mplstyle")
+# Equivalent to the inline rcParams block in VISUAL_STYLE_ADDENDUM.md §A2.
+
+figure.figsize:    7.2, 4.5
+figure.dpi:        120
+savefig.dpi:       200
+savefig.bbox:      tight
+
+font.family:       DejaVu Sans
+font.size:         13
+axes.titlesize:    16
+axes.titleweight:  bold
+axes.labelsize:    13
+xtick.labelsize:   12
+ytick.labelsize:   12
+
+# Okabe–Ito colour cycle (blue, vermillion, green, orange, purple, sky)
+axes.prop_cycle:   cycler('color', ['0072B2', 'D55E00', '009E73', 'E69F00', 'CC79A7', '56B4E9'])
+
+axes.spines.top:   False
+axes.spines.right: False
+axes.grid:         True
+grid.color:        E4E0D6
+grid.linewidth:    0.8
+axes.edgecolor:    5E6B66
+axes.linewidth:    1.1
+xtick.color:       1C2B27
+ytick.color:       1C2B27
+
+legend.frameon:    False

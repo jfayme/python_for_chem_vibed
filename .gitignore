@@ -1,0 +1,33 @@
+# Jupyter
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+
+# Conda / virtual environments
+env/
+venv/
+.venv/
+envs/
+*.conda
+*.egg
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Build / output artefacts that students regenerate themselves by running the
+# notebooks (the data/ source files committed to the repo are NOT ignored).
+data/drug_like_subset.csv
+data/summary.txt
+
+# Figures saved by the plotting lecture's savefig examples/exercises.
+*.png
+

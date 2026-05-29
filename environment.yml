@@ -1,0 +1,15 @@
+name: chem-python
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python>=3.10
+  - jupyterlab
+  - notebook
+  - numpy
+  - matplotlib
+  - pandas
+  - rdkit
+  # Used only by the build scripts in build/ (not by students):
+  - nbformat
+  - nbclient

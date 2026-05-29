@@ -1,0 +1,9 @@
+# pip fallback for the "Python for Chemists" course.
+# conda (see environment.yml) is the recommended install path because RDKit
+# installs cleanly from conda-forge, but everything below also works with pip.
+jupyterlab
+notebook
+numpy
+matplotlib
+pandas
+rdkit
